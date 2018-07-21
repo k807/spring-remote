@@ -15,7 +15,7 @@ public class DefaultBeanDefinition implements BeanDefinition {
     private String beanClass;
     private Class<?> type;
     private PropertyValues propertyValues = new DefaultPropertyValues();
-    private BeanReferences beanReferences;
+    private BeanReferences beanReferences = new DefaultBeanReferences();
     private Boolean isBeanPostProccessor;
 
     public void addPropertyValue(PropertyValue value){
@@ -35,17 +35,17 @@ public class DefaultBeanDefinition implements BeanDefinition {
 
     @Override
     public String getBeanName() {
-        return null;
+        return beanName;
     }
 
     @Override
     public Class<?> getType() {
-        return null;
+        return this.type;
     }
 
     @Override
     public PropertyValues getPropertyValues() {
-        return null;
+        return this.propertyValues;
     }
 
     @Override

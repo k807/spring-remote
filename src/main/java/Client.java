@@ -4,6 +4,7 @@ import ioc.impl.ClassPathResource;
 import ioc.impl.DefaultBeanFactory;
 import ioc.impl.XmlBeanDefinitionReader;
 import org.junit.Test;
+import test.Car;
 
 /**
  * =============================================
@@ -19,6 +20,7 @@ public class Client {
         BeanFactory beanFactory = new DefaultBeanFactory();
         BeanDefinitionReader reader = new XmlBeanDefinitionReader(beanFactory);
         reader.loadBeanDefinition(resource);
-
+        Car object = (Car) beanFactory.getBean("car");
+        System.out.println(object.getWheel().getBrand());
     }
 }

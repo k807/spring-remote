@@ -67,6 +67,7 @@ public class XmlBeanDefinitionReader implements BeanDefinitionReader {
                             if(property.hasAttribute("ref")){
                                 String ref = property.getAttribute("ref");
                                 DefaultBeanReference reference = new DefaultBeanReference(propertyName, ref);
+                                beanDefinition.addBeanReference(reference);
                             }
                         }
                     }
@@ -88,7 +89,7 @@ public class XmlBeanDefinitionReader implements BeanDefinitionReader {
         }
 
         Class type = beanDefinition.getType();
-        if(Objects.isNull(type)){
+        if(!Objects.isNull(type)){
             if(type.getInterfaces() != null){
                 for(Class inter : type.getInterfaces()){
                     if(inter == BeanPostProcessor.class){

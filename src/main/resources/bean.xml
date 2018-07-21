@@ -1,10 +1,10 @@
 <beans>
-    <bean id="wheel" class="bean.Wheel">
+    <bean id="wheel" class="test.Wheel">
         <property name="brand" value="Michelin" />
         <property name="specification" value="265/60 R18" />
     </bean>
 
-    <bean id="car" class="bean.Car">
+    <bean id="car" class="test.Car">
         <property name="name" value="Mercedes Benz G 500"/>
         <property name="length" value="4717mm"/>
         <property name="width" value="1855mm"/>
