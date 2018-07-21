@@ -37,6 +37,7 @@ public class XmlBeanDefinitionReader implements BeanDefinitionReader {
         DocumentBuilder builder = factory.newDocumentBuilder();
         Document document = builder.parse(resource.getInputStream());
 
+        // 1. 获得xml的document文件
         Element doc = document.getDocumentElement();
         NodeList nodeList = doc.getChildNodes();
         for(int i = 0; i <nodeList.getLength(); i++){
@@ -44,12 +45,14 @@ public class XmlBeanDefinitionReader implements BeanDefinitionReader {
             if(node instanceof Element){
                 Element ele = (Element) node;
                 if(ele.getNodeName().equals("bean")){
+                    // 1. 读取name和class
                     DefaultBeanDefinition beanDefinition = new DefaultBeanDefinition();
-                    String name = ele.getAttribute("name");
-                    String clazz = ele.getAttribute("clazz");
-                    beanDefinition.setBeanName(name);
+                    String beanName = ele.getAttribute("id");
+                    String clazz = ele.getAttribute("class");
+                    beanDefinition.setBeanName(beanName);
                     beanDefinition.setBeanClass(clazz);
 
+                    // 2. 读取property配置
                     NodeList propertyNodes = ele.getElementsByTagName("property");
                     for(int j = 0; j < propertyNodes.getLength(); j++) {
                         Node node1 = propertyNodes.item(j);
@@ -67,6 +70,8 @@ public class XmlBeanDefinitionReader implements BeanDefinitionReader {
                             }
                         }
                     }
+
+                    // 3. 解析class类型
                     resolveBeanDefinition(beanDefinition);
                     registrar.registBeanDefinition(beanDefinition.getBeanName(), beanDefinition);
                 }

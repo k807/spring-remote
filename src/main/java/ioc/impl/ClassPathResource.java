@@ -19,6 +19,6 @@ public class ClassPathResource implements Resource {
 
     @Override
     public InputStream getInputStream() {
-        return ClassPathResource.class.getClassLoader().getResourceAsStream(name);
+        return Thread.currentThread().getContextClassLoader().getResourceAsStream(name);
     }
 }
