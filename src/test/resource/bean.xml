@@ -20,8 +20,8 @@
     <bean id="outputService" class="per.wph.OutputServiceImpl">
     </bean>
 
-    <bean id="helloWorldService" class="per.wph.HelloWorldServiceImpl">
-        <property name="text" value="Hello World!"></property>
-        <property name="outputService" ref="outputService"></property>
-    </bean>
+    <!--<bean id="helloWorldService" class="per.wph.HelloWorldServiceImpl">-->
+        <!--<property name="text" value="Hello World!"></property>-->
+        <!--<property name="outputService" ref="outputService"></property>-->
+    <!--</bean>-->
 </beans>

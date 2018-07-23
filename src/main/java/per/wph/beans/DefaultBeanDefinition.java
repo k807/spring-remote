@@ -16,6 +16,7 @@ public class DefaultBeanDefinition implements BeanDefinition {
     private BeanReferences beanReferences = new DefaultBeanReferences();
     private Boolean isBeanPostProccessor;
 
+    @Override
     public void addPropertyValue(PropertyValue value){
         this.propertyValues.add(value);
     }
@@ -52,6 +53,7 @@ public class DefaultBeanDefinition implements BeanDefinition {
     }
 
 
+    @Override
     public void setBeanName(String beanName) {
         this.beanName = beanName;
     }
@@ -74,6 +76,7 @@ public class DefaultBeanDefinition implements BeanDefinition {
         return beanClass;
     }
 
+    @Override
     public void setBeanClass(String beanClass) {
         this.beanClass = beanClass;
     }

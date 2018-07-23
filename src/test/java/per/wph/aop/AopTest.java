@@ -31,44 +31,44 @@ public class AopTest {
         Bus bus = (Bus) beanFactory.getBean("bus");
     }
 
-    @Test
-    public void jdkAopTest() throws Exception {
-        HelloWorldService service = (HelloWorldService) beanFactory.getBean("helloWorldService");
-
-        // 1. 设置需要代理的对象
-        TargetSource targetSource = new TargetSource(HelloWorldServiceImpl.class, new Class[]{HelloWorldService.class}, service);
-
-        // 2. 设置拦截器
-        AdviceSupport support = new AdviceSupport();
-        support.setTargetSource(targetSource);
-        support.setMethodInterceptor(new LogInterceptor());
-
-        // 3. 创建代理
-        JdkDynamicAopProxy jdkDynamicAopProxy = new JdkDynamicAopProxy(support);
-        HelloWorldService helloWorldService = (HelloWorldService) jdkDynamicAopProxy.getProxy();
-
-        helloWorldService.helloWorld();
-    }
-
-
-    @Test
-    public void cgligAopTest() throws Exception {
-        HelloWorldService service = (HelloWorldService) beanFactory.getBean("helloWorldService");
-
-        // 1. 设置需要代理的对象
-        TargetSource targetSource = new TargetSource(HelloWorldServiceImpl.class, new Class[]{HelloWorldService.class}, service);
-
-        // 2. 设置拦截器
-        AdviceSupport support = new AdviceSupport();
-        support.setTargetSource(targetSource);
-        support.setMethodInterceptor(new LogInterceptor());
-
-        // 3. 创建代理
-        JdkDynamicAopProxy jdkDynamicAopProxy = new JdkDynamicAopProxy(support);
-        HelloWorldService helloWorldService = (HelloWorldService) jdkDynamicAopProxy.getProxy();
-
-        helloWorldService.helloWorld();
-    }
+//    @Test
+//    public void jdkAopTest() throws Exception {
+//        HelloWorldService service = (HelloWorldService) beanFactory.getBean("helloWorldService");
+//
+//        // 1. 设置需要代理的对象
+//        TargetSource targetSource = new TargetSource(HelloWorldServiceImpl.class, new Class[]{HelloWorldService.class}, service);
+//
+//        // 2. 设置拦截器
+//        AdviceSupport support = new AdviceSupport();
+//        support.setTargetSource(targetSource);
+//        support.setMethodInterceptor(new LogInterceptor());
+//
+//        // 3. 创建代理
+//        JdkDynamicAopProxy jdkDynamicAopProxy = new JdkDynamicAopProxy(support);
+//        HelloWorldService helloWorldService = (HelloWorldService) jdkDynamicAopProxy.getProxy();
+//
+//        helloWorldService.helloWorld();
+//    }
+//
+//
+//    @Test
+//    public void cgligAopTest() throws Exception {
+//        HelloWorldService service = (HelloWorldService) beanFactory.getBean("helloWorldService");
+//
+//        // 1. 设置需要代理的对象
+//        TargetSource targetSource = new TargetSource(HelloWorldServiceImpl.class, new Class[]{HelloWorldService.class}, service);
+//
+//        // 2. 设置拦截器
+//        AdviceSupport support = new AdviceSupport();
+//        support.setTargetSource(targetSource);
+//        support.setMethodInterceptor(new LogInterceptor());
+//
+//        // 3. 创建代理
+//        JdkDynamicAopProxy jdkDynamicAopProxy = new JdkDynamicAopProxy(support);
+//        HelloWorldService helloWorldService = (HelloWorldService) jdkDynamicAopProxy.getProxy();
+//
+//        helloWorldService.helloWorld();
+//    }
 
 
 }

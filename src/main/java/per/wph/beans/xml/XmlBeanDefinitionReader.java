@@ -51,36 +51,9 @@ public class XmlBeanDefinitionReader implements BeanDefinitionReader {
             if(node instanceof Element){
                 Element ele = (Element) node;
                 if(ele.getNodeName().equals("bean")){
-                    // 1. 读取name和class
-                    DefaultBeanDefinition beanDefinition = new DefaultBeanDefinition();
-                    String beanName = ele.getAttribute("id");
-                    String clazz = ele.getAttribute("class");
-                    beanDefinition.setBeanName(beanName);
-                    beanDefinition.setBeanClass(clazz);
+                    parseBeanElement(ele);
+                }else if(ele.getNodeName().equals("db")){
 
-                    // 2. 读取property配置
-                    NodeList propertyNodes = ele.getElementsByTagName("property");
-                    for(int j = 0; j < propertyNodes.getLength(); j++) {
-                        Node node1 = propertyNodes.item(j);
-                        if(node1 instanceof Element){
-                            Element property = (Element) node1;
-                            String propertyName = property.getAttribute("name");
-                            if (property.hasAttribute("value")){
-                                String value = property.getAttribute("value");
-                                DefaultPropertyValue propertyValue = new DefaultPropertyValue(propertyName, value);
-                                beanDefinition.addPropertyValue(propertyValue);
-                            }
-                            if(property.hasAttribute("ref")){
-                                String ref = property.getAttribute("ref");
-                                DefaultBeanReference reference = new DefaultBeanReference(propertyName, ref);
-                                beanDefinition.addBeanReference(reference);
-                            }
-                        }
-                    }
-
-                    // 3. 解析class类型
-                    resolveBeanDefinition(beanDefinition);
-                    registrar.registBeanDefinition(beanDefinition.getBeanName(), beanDefinition);
                 }
 
             }
@@ -93,17 +66,40 @@ public class XmlBeanDefinitionReader implements BeanDefinitionReader {
         if(!Objects.isNull(resolver)){
             resolver.resolver(beanDefinition);
         }
+    }
 
-        Class type = beanDefinition.getType();
-        if(!Objects.isNull(type)){
-            if(type.getInterfaces() != null){
-                for(Class inter : type.getInterfaces()){
-                    if(inter == BeanPostProcessor.class){
-                        beanDefinition.markBeanPostProccessor();
-                        return;
-                    }
+    private void parseBeanElement(Element ele) throws ClassNotFoundException {
+        // 1. 读取name和class
+        DefaultBeanDefinition beanDefinition = new DefaultBeanDefinition();
+        String beanName = ele.getAttribute("id");
+        String clazz = ele.getAttribute("class");
+        beanDefinition.setBeanName(beanName);
+        beanDefinition.setBeanClass(clazz);
+
+        // 2. 读取property配置
+        NodeList propertyNodes = ele.getElementsByTagName("property");
+        for(int j = 0; j < propertyNodes.getLength(); j++) {
+            Node node1 = propertyNodes.item(j);
+            if(node1 instanceof Element){
+                Element property = (Element) node1;
+                String propertyName = property.getAttribute("name");
+                if (property.hasAttribute("value")){
+                    String value = property.getAttribute("value");
+                    DefaultPropertyValue propertyValue = new DefaultPropertyValue(propertyName, value);
+                    beanDefinition.addPropertyValue(propertyValue);
+                }
+                if(property.hasAttribute("ref")){
+                    String ref = property.getAttribute("ref");
+                    DefaultBeanReference reference = new DefaultBeanReference(propertyName, ref);
+                    beanDefinition.addBeanReference(reference);
                 }
             }
         }
+
+        // 3. 解析class类型
+        resolveBeanDefinition(beanDefinition);
+        registrar.registBeanDefinition(beanDefinition.getBeanName(), beanDefinition);
     }
+
+
 }
