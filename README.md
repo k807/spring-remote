@@ -8,9 +8,11 @@
 
 **spring-remote**```服务端```可将接口实现配置在数据库中，通过简单的标示即可切换接口实现，代码更新时，客户端代码也无需重新编译部署，只需重启spring容器
 
+**spring-remote**兼容spring容器的ioc,aop功能，对bean的操作和配置与本地bean一致
+
 ## 环境
 
-当前开发版代码是基于自己写的简易版的spring环境
+当前开发版代码是基于自己写的简易版的spring环境,拥有spring容器基础的ioc,aop功能
 ### 基础springIOC AOP容器
 1. ```<property name="" value="">``` 支持String类型
 2. ```<property name="" ref=""> ```支持引用类型
@@ -32,18 +34,26 @@
 2. 配置远程bean
 
 需要配置remote-name属性,其他与基础spring-bean配置方式一致
+接口实现类默认取version值最大的版本
 ```xml
 <bean id="" remote-name="">
     <property></property>
 </bean>
 ```
 
-如果需要制定的remote接口实现版本，则可以
+如果需要指定的remote接口实现版本，则可以指定version版本号
 ```xml
 <bean id="" remote-name="" version="">
     <property></property>
 </bean>
 ```
+
+## 注意事项
+1. 客户端预留的接口不可随意更改包位置
+2. 客户端不可随意更改接口信息
+3. 服务端的中的表class_name填写实现类的类全路径名,例如com.doc包下的ServiceImpl类,需要填写的class_name为com.doc.ServiceImpl
+4. 客户端更改实现类版本号只需指定version
+5. 服务端想更改客户端默认使用的实现类，只需将实现类的version设为最大值
 
 服务端：
 
