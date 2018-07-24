@@ -4,8 +4,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import per.wph.beans.factory.Registry;
-import per.wph.beans.io.ResourceLoader;
+import per.wph.beans.factory.BeanDefinitionRegistry;
 import per.wph.beans.*;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -22,8 +21,8 @@ import java.io.InputStream;
 public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 
 
-    public XmlBeanDefinitionReader(Registry registry) {
-        super(registry, new ResourceLoader());
+    public XmlBeanDefinitionReader(BeanDefinitionRegistry beanDefinitionRegistry) {
+        super(beanDefinitionRegistry);
     }
 
     @Override
@@ -71,7 +70,7 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
         }
 
         processProperty(ele, beanDefinition);
-        getRegistry().registBeanDefinition(name, beanDefinition);
+        getBeanDefinitionRegistry().registBeanDefinition(name, beanDefinition);
     }
 
 

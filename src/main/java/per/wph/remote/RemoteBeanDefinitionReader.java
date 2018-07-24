@@ -1,6 +1,5 @@
 package per.wph.remote;
 
-import com.sun.deploy.util.StringUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -9,8 +8,7 @@ import per.wph.beans.AbstractBeanDefinitionReader;
 import per.wph.beans.BeanDefinition;
 import per.wph.beans.BeanReference;
 import per.wph.beans.PropertyValue;
-import per.wph.beans.factory.Registry;
-import per.wph.beans.io.ResourceLoader;
+import per.wph.remote.factory.RemoteBeanFactory;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -22,12 +20,9 @@ public class RemoteBeanDefinitionReader extends AbstractBeanDefinitionReader {
 
     private RemoteDBConfiguer dbConfiguer;
 
-    public void setDbConfiguer(RemoteDBConfiguer dbConfiguer) {
-        this.dbConfiguer = dbConfiguer;
-    }
-
-    public RemoteBeanDefinitionReader(Registry registry, ResourceLoader resourceLoader) {
-        super(registry, resourceLoader);
+    public RemoteBeanDefinitionReader(RemoteBeanFactory beanFactory) {
+        super(beanFactory);
+        this.dbConfiguer = beanFactory;
     }
 
     @Override
@@ -74,6 +69,8 @@ public class RemoteBeanDefinitionReader extends AbstractBeanDefinitionReader {
                     case DB_PROPERTY_ELEMENT:
                         processDBElement(ele);
                         break;
+                        default:
+                            break;
                 }
             }
         }
@@ -110,7 +107,7 @@ public class RemoteBeanDefinitionReader extends AbstractBeanDefinitionReader {
         }
 
         processProperty(ele, beanDefinition);
-        getRegistry().registBeanDefinition(name, beanDefinition);
+        getBeanDefinitionRegistry().registBeanDefinition(name, beanDefinition);
     }
 
 

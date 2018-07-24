@@ -48,7 +48,7 @@
 服务端：
 
 按照约定配置bean数据库
-库名任意,表结构如下
+库名为```remote_beans```,表结构如下
 
 | 列名 | 列属性 | 是否主键 | 是否可空 | 备注 |
 | :-: | :-: | :-: | :-: | :-: |
@@ -56,7 +56,7 @@
 | class_name | varchar | n | n | 类的全路径名 |
 | interface_name | varchar | n | n | 实现的接口 |
 | remote_name | varchar | n | n | 自己设置的名字，可以不唯一，客户端通过remote_name 找到依赖的接口实现 |
-| version | varchar | n | n | 一个实现类的版本, 客户端可以通过制定version指定需要的类,相同remote_name version不能相同 |
+| version | int | n | n | 一个实现类的版本, 客户端可以通过制定version指定需要的类,相同remote_name version不能相同 |
 | open | boolean | n | n | 是否开放，如果为false，则不会被客户端访问到 |
 | class_byte | n | n | n | class文件，不允许修改 |
 

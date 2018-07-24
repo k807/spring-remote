@@ -1,5 +1,5 @@
 package per.wph.remote;
 
 public interface ByteLoaderStrategy {
-    byte[] load(String str);
+    byte[] load(RemoteBeanDefinition beanDefinition);
 }

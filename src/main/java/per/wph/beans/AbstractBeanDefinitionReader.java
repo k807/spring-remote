@@ -1,6 +1,6 @@
 package per.wph.beans;
 
-import per.wph.beans.factory.Registry;
+import per.wph.beans.factory.BeanDefinitionRegistry;
 import per.wph.beans.io.ResourceLoader;
 
 public abstract class AbstractBeanDefinitionReader implements BeanDefinitionReader{
@@ -18,17 +18,16 @@ public abstract class AbstractBeanDefinitionReader implements BeanDefinitionRead
 
     public static final String REF_ATTRIBUTE = "ref";
 
-    private Registry registry;
+    private BeanDefinitionRegistry beanDefinitionRegistry;
 
     private ResourceLoader resourceLoader;
 
-    public AbstractBeanDefinitionReader(Registry registry, ResourceLoader resourceLoader) {
-        this.registry = registry;
-        this.resourceLoader = resourceLoader;
+    public AbstractBeanDefinitionReader(BeanDefinitionRegistry beanDefinitionRegistry) {
+        this.beanDefinitionRegistry = beanDefinitionRegistry;
     }
 
-    public Registry getRegistry() {
-        return registry;
+    public BeanDefinitionRegistry getBeanDefinitionRegistry() {
+        return beanDefinitionRegistry;
     }
 
     public ResourceLoader getResourceLoader() {

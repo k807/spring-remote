@@ -17,22 +17,22 @@ public abstract class AbstractBeanFactory implements BeanFactory {
     /**
      * 存储已经实例化的bean
      */
-    private Map<String, Object> singletonObjects = new ConcurrentHashMap<>();
+    protected Map<String, Object> singletonObjects = new ConcurrentHashMap<>();
 
     /**
      * 存储beandefinitions
      */
-    private HashMap<String, BeanDefinition> beandefintitions = new HashMap<>();
+    protected HashMap<String, BeanDefinition> beandefintitions = new HashMap<>();
 
     /**
      * 存储beanPostProcessors
      */
-    private List<BeanPostProcessor> beanPostProcessors = new ArrayList<>();
+    protected List<BeanPostProcessor> beanPostProcessors = new ArrayList<>();
 
     /**
      * 存储的beanDefinitionNames
      */
-    private volatile List<String> beanDefinitionNames = new ArrayList<>(256);
+    protected volatile List<String> beanDefinitionNames = new ArrayList<>(256);
 
     /**
      * 尝试从cache中获取bean,如果存在则直接返回
@@ -165,5 +165,24 @@ public abstract class AbstractBeanFactory implements BeanFactory {
             String beanName = (String) it.next();
             getBean(beanName);
         }
+    }
+
+
+    @Override
+    public BeanDefinition getBeanDefinition(String beanName) {
+        if(containsBeanDefinition(beanName)){
+            return beandefintitions.get(beanName);
+        }
+        throw new RuntimeException();
+    }
+
+    @Override
+    public boolean containsBeanDefinition(String beanName) {
+        for(String name : beanDefinitionNames){
+            if(beanName != null && beanName.equals(name)){
+                return true;
+            }
+        }
+        return false;
     }
 }
