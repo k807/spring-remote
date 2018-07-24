@@ -14,10 +14,14 @@ import java.io.InputStream;
  * @create 2018-07-23 22:42
  * =============================================
  */
-public class DataBaseClassLoader extends AbstractClassLoader {
+public class RemoteClassLoader extends AbstractClassLoader {
 
 
-    public DataBaseClassLoader(DatabaseStrategy strategy){
+    /**
+     * 使用策略模式，使用strategy获取class文件的byte[]
+     * @param strategy
+     */
+    public RemoteClassLoader(DatabaseStrategy strategy){
         super(strategy);
     }
 

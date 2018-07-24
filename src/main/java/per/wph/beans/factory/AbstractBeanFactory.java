@@ -35,7 +35,8 @@ public abstract class AbstractBeanFactory implements BeanFactory {
     private volatile List<String> beanDefinitionNames = new ArrayList<>(256);
 
     /**
-     * 获取bean
+     * 尝试从cache中获取bean,如果存在则直接返回
+     * 如果不存在则根据BeanDefinition创建新的bean
      * @param name bean的name, 在xml里面就是id
      * @return
      * @throws Exception

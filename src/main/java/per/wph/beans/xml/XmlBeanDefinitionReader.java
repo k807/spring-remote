@@ -58,12 +58,19 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
         }
     }
 
-    protected void processBeanDefinition(Element ele) {
+    protected void processBeanDefinition(Element ele){
         String name = ele.getAttribute("id");
         String className = ele.getAttribute("class");
         BeanDefinition beanDefinition = new BeanDefinition();
-        processProperty(ele, beanDefinition);
         beanDefinition.setBeanClassName(className);
+        try {
+            Class<?> clazz = Class.forName(className);
+            beanDefinition.setBeanClass(clazz);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+
+        processProperty(ele, beanDefinition);
         getRegistry().registBeanDefinition(name, beanDefinition);
     }
 

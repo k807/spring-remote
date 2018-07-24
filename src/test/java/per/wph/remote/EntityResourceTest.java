@@ -16,7 +16,7 @@ public class EntityResourceTest {
 
     @Test
     public void testDBConnect() throws ClassNotFoundException, IllegalAccessException, InstantiationException {
-        DataBaseClassLoader classLoader = new DataBaseClassLoader(new DatabaseStrategy());
+        RemoteClassLoader classLoader = new RemoteClassLoader(new DatabaseStrategy());
         classLoader.loadClass("per.wph.HelloWorldServiceImpl");
         Class clazz = classLoader.getClass("per.wph.HelloWorldServiceImpl");
         HelloWorldService service = (HelloWorldService) clazz.newInstance();
