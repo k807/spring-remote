@@ -8,6 +8,8 @@ import per.wph.beans.AbstractBeanDefinitionReader;
 import per.wph.beans.BeanDefinition;
 import per.wph.beans.BeanReference;
 import per.wph.beans.PropertyValue;
+import per.wph.beans.factory.BeanDefinitionRegistry;
+import per.wph.beans.io.ResourceLoader;
 import per.wph.remote.factory.RemoteBeanFactory;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -20,8 +22,8 @@ public class RemoteBeanDefinitionReader extends AbstractBeanDefinitionReader {
 
     private RemoteDBConfiguer dbConfiguer;
 
-    public RemoteBeanDefinitionReader(RemoteBeanFactory beanFactory) {
-        super(beanFactory);
+    public RemoteBeanDefinitionReader(RemoteBeanFactory beanFactory, ResourceLoader resourceLoader) {
+        super(beanFactory, resourceLoader);
         this.dbConfiguer = beanFactory;
     }
 
@@ -92,7 +94,7 @@ public class RemoteBeanDefinitionReader extends AbstractBeanDefinitionReader {
         beanDefinition.setBeanClassName(className);
         // 默认使用AppClassLoader加载类文件
 
-        if(remoteName != null || !"".equals(remoteName)){
+        if(remoteName != null && !"".equals(remoteName)){
             beanDefinition.markRemote();
             beanDefinition.setRemoteName(remoteName);
             beanDefinition.setVersion(remoteVersion);
@@ -101,6 +103,7 @@ public class RemoteBeanDefinitionReader extends AbstractBeanDefinitionReader {
         try {
             if(!beanDefinition.isRemote()){
                 Class<?> clazz = Class.forName(className);
+                beanDefinition.setBeanClass(clazz);
             }
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
@@ -122,8 +125,8 @@ public class RemoteBeanDefinitionReader extends AbstractBeanDefinitionReader {
 
         dbConfiguer.configureDriver(driver);
         dbConfiguer.configureHost(url);
-        dbConfiguer.configureHost(username);
-        dbConfiguer.configureHost(password);
+        dbConfiguer.configureUsername(username);
+        dbConfiguer.configurePassowrd(password);
     }
 
     /**

@@ -22,8 +22,9 @@ public abstract class AbstractBeanDefinitionReader implements BeanDefinitionRead
 
     private ResourceLoader resourceLoader;
 
-    public AbstractBeanDefinitionReader(BeanDefinitionRegistry beanDefinitionRegistry) {
+    public AbstractBeanDefinitionReader(BeanDefinitionRegistry beanDefinitionRegistry, ResourceLoader resourceLoader) {
         this.beanDefinitionRegistry = beanDefinitionRegistry;
+        this.resourceLoader = resourceLoader;
     }
 
     public BeanDefinitionRegistry getBeanDefinitionRegistry() {

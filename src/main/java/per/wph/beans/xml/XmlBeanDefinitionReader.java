@@ -6,6 +6,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import per.wph.beans.factory.BeanDefinitionRegistry;
 import per.wph.beans.*;
+import per.wph.beans.io.ResourceLoader;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -21,8 +22,8 @@ import java.io.InputStream;
 public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 
 
-    public XmlBeanDefinitionReader(BeanDefinitionRegistry beanDefinitionRegistry) {
-        super(beanDefinitionRegistry);
+    public XmlBeanDefinitionReader(BeanDefinitionRegistry beanDefinitionRegistry, ResourceLoader resourceLoader) {
+        super(beanDefinitionRegistry, resourceLoader);
     }
 
     @Override

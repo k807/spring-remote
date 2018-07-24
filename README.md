@@ -4,9 +4,9 @@
 
 **spring**容器在启动时会自动从数据库中获取远程接口实现,并对依赖接口的bean进行装配
 
-**spring-remote**实现了接口实现的可配置化,```客户端```只需声明依赖的接口，和使用配置好的spring-remote环境，无需关注接口实现细节，只需```面向接口编程```，spring-remote会自动从服务器获取接口实现
+**spring-remote**实现了接口实现或子类继承的可配置化,```客户端```只需声明依赖的接口，和使用配置好的spring-remote环境，无需关注实现细节，只需```面向接口编程```，spring-remote会自动从服务器获取接口实现
 
-**spring-remote**```服务端```可将接口实现配置在数据库中，通过简单的标示即可切换接口实现，代码更新时，客户端代码也无需重新编译部署，只需重启spring容器
+**spring-remote**```服务端```可将实现配置在数据库中，通过简单的标示即可切换实现，代码更新时，客户端代码也无需重新编译部署，只需重启spring容器
 
 **spring-remote**兼容spring容器的ioc,aop功能，对bean的操作和配置与本地bean一致
 
@@ -64,7 +64,7 @@
 | :-: | :-: | :-: | :-: | :-: |
 | id | int | y | n | 可以自己设置递增规则 |
 | class_name | varchar | n | n | 类的全路径名 |
-| interface_name | varchar | n | n | 实现的接口 |
+| interface_name | varchar | n | y | 实现的接口,没有接口则为空 |
 | remote_name | varchar | n | n | 自己设置的名字，可以不唯一，客户端通过remote_name 找到依赖的接口实现 |
 | version | int | n | n | 一个实现类的版本, 客户端可以通过制定version指定需要的类,相同remote_name version不能相同 |
 | open | boolean | n | n | 是否开放，如果为false，则不会被客户端访问到 |

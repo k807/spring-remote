@@ -1,15 +1,18 @@
 package per.wph.remote.factory;
 
 import per.wph.beans.BeanDefinition;
-import per.wph.beans.factory.AbstractBeanFactory;
 import per.wph.beans.factory.AutowireCapableBeanFactory;
 import per.wph.remote.ByteLoaderStrategy;
 import per.wph.remote.RemoteBeanDefinition;
 import per.wph.remote.RemoteClassLoader;
 
+import java.util.concurrent.ConcurrentHashMap;
+
 public class DefaultRemoteBeanFactory extends AutowireCapableBeanFactory implements RemoteBeanFactory {
 
     private RemoteClassLoader remoteClassLoader;
+
+    private ConcurrentHashMap<String,String> remote2beanName = new ConcurrentHashMap<>();
 
     private String driver;
     private String host;
@@ -24,8 +27,10 @@ public class DefaultRemoteBeanFactory extends AutowireCapableBeanFactory impleme
     protected Object createBeanInstance(BeanDefinition beanDefinition) throws Exception {
         if (beanDefinition instanceof RemoteBeanDefinition) {
             RemoteBeanDefinition remote = (RemoteBeanDefinition) beanDefinition;
-            Class realClass = remoteClassLoader.loadClass(remote.getRemoteName());
-            return doCreateBeanInstance(realClass, remote.getRemoteName());
+            if(remote.getRemoteName() != null && remote.getRemoteName() != ""){
+                Class realClass = remoteClassLoader.loadClass(getBeanNameByRemote(remote.getRemoteName()));
+                return doCreateBeanInstance(realClass, getBeanNameByRemote(remote.getRemoteName()));
+            }
         }
         return super.createBeanInstance(beanDefinition);
     }
@@ -76,5 +81,25 @@ public class DefaultRemoteBeanFactory extends AutowireCapableBeanFactory impleme
     @Override
     public String getPassword() {
         return password;
+    }
+
+    public void registRemoteName(String remoteName, String beanName) {
+        this.remote2beanName.put(remoteName, beanName);
+    }
+
+    @Override
+    public String getBeanNameByRemote(String beanName) {
+        return this.remote2beanName.get(beanName);
+    }
+
+    @Override
+    public void registBeanDefinition(String name, BeanDefinition beanDefinition) {
+        if(beanDefinition instanceof RemoteBeanDefinition){
+            RemoteBeanDefinition remote = (RemoteBeanDefinition) beanDefinition;
+            if(remote.getRemoteName() != null){
+                registRemoteName(remote.getRemoteName(), name);
+            }
+        }
+        super.registBeanDefinition(name, beanDefinition);
     }
 }

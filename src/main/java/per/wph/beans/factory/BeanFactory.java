@@ -1,5 +1,5 @@
 package per.wph.beans.factory;
 
 public interface BeanFactory extends BeanDefinitionRegistry {
-    Object getBean(String name) throws Exception;
+    <T> T getBean(String name) throws Exception;
 }

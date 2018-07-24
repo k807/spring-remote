@@ -1,0 +1,23 @@
+<beans>
+
+    <db-property>
+        <driver>com.mysql.jdbc.Driver</driver>
+        <url>jdbc:mysql://localhost:3306/test</url>
+        <username>root</username>
+        <password>root</password>
+    </db-property>
+
+    <bean id="remote" remote-name="helloWorldService" version="0">
+    </bean>
+
+    <bean id="person" class="per.wph.Person">
+        <property name="service" ref="remote"></property>
+    </bean>
+
+    <bean id="fly" remote-name="flyService" version="0"></bean>
+
+    <bean id="son" remote-name="son">
+        <property name="name" value="JackSon"></property>
+    </bean>
+
+</beans>

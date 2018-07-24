@@ -27,11 +27,13 @@ public final class RemoteClassLoader extends ClassLoader {
     }
 
 
+
     @Override
     protected Class<?> findClass(String name) {
         if(registry.containsBeanDefinition(name) && registry.getBeanDefinition(name) instanceof RemoteBeanDefinition){
             RemoteBeanDefinition remoteBeanDefinition = (RemoteBeanDefinition) registry.getBeanDefinition(name);
-            return super.defineClass(name, strategy.load(remoteBeanDefinition), 0, strategy.load(remoteBeanDefinition).length);
+            byte[] bytes = strategy.load(remoteBeanDefinition);
+            return super.defineClass(remoteBeanDefinition.getBeanClassName(), bytes, 0, bytes.length);
         }
         throw new RuntimeException();
     }

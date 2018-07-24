@@ -19,18 +19,19 @@ public class DatabaseStrategy implements ByteLoaderStrategy {
 
     private RemoteDBConfiguer dbConfiguer;
 
-    public DatabaseStrategy(RemoteDBConfiguer dbConfiguer) {
-        this.dbConfiguer = dbConfiguer;
-    }
-
     private static final String TABLE_NAME_DEAFULT = "remote_beans";
 
-    private static final String CLASS_BYTE_COLUMN_NAME = "class_byte";
+    private static final String CLASS_BYTE_COLUMNNAME = "class_byte";
+    private static final String CLASS_NAME_COLUMNNAME = "class_name";
 
-    private static final String QUERY_DEFAULT = "SELECT * FROM ? WHERE remote_name = ? ORDER BY version DESC LIMIT 1";
+    private static final String QUERY_DEFAULT = "SELECT * FROM " + TABLE_NAME_DEAFULT + " WHERE remote_name = ? ORDER BY version DESC LIMIT 1";
 
-    private static final String QUERY_FOR_VERSION = "SELECT * FROM ? WHERE remota_name = ? AND version = ?";
+    private static final String QUERY_FOR_VERSION = "SELECT * FROM " + TABLE_NAME_DEAFULT + " WHERE remote_name = ? AND version = ?";
 
+
+    public void setDbConfiguer(RemoteDBConfiguer dbConfiguer) {
+        this.dbConfiguer = dbConfiguer;
+    }
 
     @Override
     public byte[] load(RemoteBeanDefinition beanDefinition) {
@@ -48,18 +49,19 @@ public class DatabaseStrategy implements ByteLoaderStrategy {
             throw new RuntimeException(e);
         }
 
+        closeConn(conn);
         return ret;
     }
 
     private InputStream queryWithVersion(Connection connection, RemoteBeanDefinition beanDefinition) throws Exception{
         InputStream is = null;
         PreparedStatement ps = connection.prepareStatement(QUERY_FOR_VERSION);
-        ps.setString(1, TABLE_NAME_DEAFULT);
-        ps.setString(2, beanDefinition.getRemoteName());
-        ps.setString(3, beanDefinition.getVersion());
+        ps.setString(1, beanDefinition.getRemoteName());
+        ps.setString(2, beanDefinition.getVersion());
         ResultSet resultSet = ps.executeQuery();
         while (resultSet.next()){
-            is = resultSet.getBlob(CLASS_BYTE_COLUMN_NAME).getBinaryStream();
+            is = resultSet.getBlob(CLASS_BYTE_COLUMNNAME).getBinaryStream();
+            beanDefinition.setBeanClassName(resultSet.getString(CLASS_NAME_COLUMNNAME));
         }
         return is;
     }
@@ -68,11 +70,11 @@ public class DatabaseStrategy implements ByteLoaderStrategy {
     private InputStream query(Connection connection, RemoteBeanDefinition beanDefinition) throws Exception{
         InputStream is = null;
         PreparedStatement ps = connection.prepareStatement(QUERY_DEFAULT);
-        ps.setString(1, TABLE_NAME_DEAFULT);
-        ps.setString(2, beanDefinition.getRemoteName());
+        ps.setString(1, beanDefinition.getRemoteName());
         ResultSet resultSet = ps.executeQuery();
         while (resultSet.next()){
-            is = resultSet.getBlob(CLASS_BYTE_COLUMN_NAME).getBinaryStream();
+            is = resultSet.getBlob(CLASS_BYTE_COLUMNNAME).getBinaryStream();
+            beanDefinition.setBeanClassName(resultSet.getString(CLASS_NAME_COLUMNNAME));
         }
         return is;
     }
@@ -107,6 +109,14 @@ public class DatabaseStrategy implements ByteLoaderStrategy {
             throw new RuntimeException(e);
         }
         return conn;
+    }
+
+    public void closeConn(Connection connection){
+        try {
+            connection.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
 }
