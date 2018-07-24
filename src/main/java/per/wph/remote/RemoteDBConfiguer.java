@@ -7,4 +7,9 @@ public interface RemoteDBConfiguer {
     void configureHost(String host);
     void configureUsername(String username);
     void configurePassowrd(String password);
+
+    String getDriver();
+    String getHost();
+    String getUsername();
+    String getPassword();
 }

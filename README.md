@@ -61,8 +61,10 @@
 | class_byte | n | n | n | class文件，不允许修改 |
 
 ## 后续版本
-1. 服务端可以配置秘钥加密class,remoteClassLoader解密读取class文件
+1. 支持github的remote版本
 
-2. 支持autowire, 当bean配置autowireByType,并且在spring容器中找不到对应接口实现时，会自动从remote获取class实现,并对bean自动装配
+2. 服务端可以配置秘钥加密class,remoteClassLoader解密读取class文件
 
-3. 支持注解形式
+3. 支持autowire, 当bean配置autowireByType,并且在spring容器中找不到对应接口实现时，会自动从remote获取class实现,并对bean自动装配
+
+4. 支持注解形式

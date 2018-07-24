@@ -20,10 +20,13 @@ import java.sql.SQLException;
  */
 public class DatabaseStrategy implements ByteLoaderStrategy {
 
-    private String name;
-    private Integer nameIndex;
-    private Integer classIndex;
-    private String tableName;
+    private RemoteDBConfiguer dbConfiguer;
+
+    public DatabaseStrategy(RemoteDBConfiguer dbConfiguer) {
+        this.dbConfiguer = dbConfiguer;
+    }
+
+
 
     @Override
     public byte[] load(String name) {
