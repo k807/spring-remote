@@ -2,12 +2,8 @@ package per.wph.beans.factory;
 
 import per.wph.beans.*;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Type;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * =============================================
@@ -18,43 +14,77 @@ import java.util.Set;
  */
 public abstract class AbstractBeanFactory implements BeanFactory {
 
-    private HashMap<String, Object> singletonObjects = new HashMap<>();
+    /**
+     * 存储已经实例化的bean
+     */
+    private Map<String, Object> singletonObjects = new ConcurrentHashMap<>();
+
+    /**
+     * 存储beandefinitions
+     */
     private HashMap<String, BeanDefinition> beandefintitions = new HashMap<>();
-    private Set<BeanPostProcessor> beanPostProcessors = new LinkedHashSet<>();
 
+    /**
+     * 存储beanPostProcessors
+     */
+    private List<BeanPostProcessor> beanPostProcessors = new ArrayList<>();
 
-    private BeanDefinitionReader beanDefinitionReader;
+    /**
+     * 存储的beanDefinitionNames
+     */
+    private volatile List<String> beanDefinitionNames = new ArrayList<>(256);
 
-    public AbstractBeanFactory() {
-    }
-
-    public void setBeanDefinitionReader(BeanDefinitionReader beanDefinitionReader) {
-        this.beanDefinitionReader = beanDefinitionReader;
-    }
-
+    /**
+     * 获取bean
+     * @param name bean的name, 在xml里面就是id
+     * @return
+     * @throws Exception
+     */
     @Override
-    public Object getBean(String name) throws IllegalAccessException, InstantiationException, NoSuchFieldException {
+    public Object getBean(String name) throws Exception {
         // 1. 从缓存获取object对象
         Object bean = singletonObjects.get(name);
         if(!Objects.isNull(bean)){
             return bean;
         }
 
+        // 2. 获取bendefinitions
+
         BeanDefinition beanDefinition = beandefintitions.get(name);
         if(beanDefinition == null){
             throw new IllegalArgumentException("No bean named " + name + " is defined");
         }
-        bean = createBean(beanDefinition);
+
+        //todo : initmethod
+
+        // 3. 创建对象
+        bean = doCreateBean(beanDefinition);
+        bean = initializeBean(bean, name);
+        beanDefinition.setBean(bean);
+        singletonObjects.put(name, bean);
         return bean;
     }
 
 
+    /**
+     * 提供注册bean的接口
+     * @param name
+     * @param beanDefinition
+     */
     @Override
     public void registBeanDefinition(String name, BeanDefinition beanDefinition) {
+        this.beanDefinitionNames.add(name);
         this.beandefintitions.put(name, beanDefinition);
     }
 
-    private Object initializeBean(Object bean, String name) throws Exception {
+    /**
+     * 初始化bean
+     * @param bean
+     * @param name
+     * @return
+     * @throws Exception
+     */
+    protected Object initializeBean(Object bean, String name) throws Exception {
         for (BeanPostProcessor beanPostProcessor : beanPostProcessors) {
             bean = beanPostProcessor.postProcessBeforeInitialization(bean, name);
         }
@@ -65,92 +95,74 @@ public abstract class AbstractBeanFactory implements BeanFactory {
         return bean;
     }
 
-    private Object createBean(BeanDefinition beanDefinition) throws IllegalAccessException, InstantiationException, NoSuchFieldException {
+    /**
+     * 创建bean的模板方法
+     * @param beanDefinition
+     * @return
+     * @throws Exception
+     */
+    protected Object doCreateBean(BeanDefinition beanDefinition) throws Exception {
+        /**
+         * 创建原始bean对象
+         */
+        Object bean = createBeanInstance(beanDefinition);
+        beanDefinition.setBean(bean);
 
-        Object object;
+        /**
+         * 对bean进行注入
+         */
+        applyPropertyValues(bean, beanDefinition);
 
-        Class<?> type = beanDefinition.getType();
-
-        // todo: 后续需要支持带参数构造方法
-        object = type.newInstance();
-
-        // todo: 先填充字符串常量，再初始化引用还是顺序无所谓？
-        // 根据BeanReference准备好需要注入bean
-        for(BeanReference beanReference : beanDefinition.getBeanReferences()){
-            String ref = beanReference.getRef();
-            Object refObject = getBean(ref);
-            beanReference.setObject(refObject);
-        }
-
-        // todo: 基本类型转换, 现在仅支持基本数据类型
-        // 基本类型转换
-        for(PropertyValue value : beanDefinition.getPropertyValues()){
-
-        }
-
-        // 根据beanDefintion对对象进行注射
-        populate(object, beanDefinition);
-
-        // 将组装完成的bean注册到缓存
-        singletonObjects.put(beanDefinition.getBeanName(), object);
-
-        return object;
-
+        beanDefinition.setBean(bean);
+        return bean;
     }
 
+    protected abstract void applyPropertyValues(Object bean, BeanDefinition beanDefinition) throws Exception;
 
-    private void populate(Object object, BeanDefinition beanDefinition) throws NoSuchFieldException, IllegalAccessException {
-        Class<?> type = beanDefinition.getType();
-        // 成员变量名不能隐藏，方法参数名字可能隐藏
-        for(BeanReference beanReference : beanDefinition.getBeanReferences()){
-            Field field = type.getDeclaredField(beanReference.getName());
-            field.setAccessible(true);
-            field.set(object, beanReference.getObject());
-        }
+    /**
+     * 创建原始beanInstance
+     * @param beanDefinition
+     * @return
+     * @throws Exception
+     */
+    protected Object createBeanInstance(BeanDefinition beanDefinition) throws Exception {
+        return beanDefinition.getBeanClass().newInstance();
+    }
 
-        for(PropertyValue value : beanDefinition.getPropertyValues()){
-            Field field = type.getDeclaredField(value.getName());
-            field.setAccessible(true);
-            Type fieldType = field.getType();
-
-            // 基本数据类型转换
-            if("".equals(value.getValue())){
-            }else{
-                if(fieldType.equals(String.class)){
-                    field.set(object, value.getValue());
-                }
-
-                if(fieldType.equals(int.class)){
-                    field.set(object, Integer.valueOf(value.getValue()));
-                }
-
-                if(fieldType.equals(Long.class)){
-                    field.set(object, Long.valueOf(value.getValue()));
-                }
-
-                if(fieldType.equals(Float.class)){
-                    field.set(object, Float.valueOf(value.getValue()));
-                }
-
-                if(fieldType.equals(Double.class)){
-                    field.set(object, Double.valueOf(value.getValue()));
-                }
-
-                if(fieldType.equals(Character.class)){
-                    field.set(object, Character.valueOf(value.getValue().toCharArray()[0]));
-                }
-
-                if(fieldType.equals(Byte.class)){
-                    field.set(object, Byte.valueOf(value.getValue()));
-                }
+    /**
+     * 寻找所有type的子类
+     * @param type
+     * @return
+     * @throws Exception
+     */
+    public List getBeansForType(Class type) throws Exception {
+        List beans = new ArrayList<Object>();
+        for(Map.Entry<String, BeanDefinition> entry : beandefintitions.entrySet()){
+            if(type.isAssignableFrom(entry.getValue().getBeanClass())){
+                beans.add(getBean(entry.getKey()));
             }
-
         }
-
-        // todo: 后续支持后续处理器
+        return beans;
     }
 
 
+    /**
+     * 添加beanPostProcessor
+     * @param beanPostProcessor
+     * @throws Exception
+     */
+    public void addBeanPostProcessor(BeanPostProcessor beanPostProcessor) throws Exception {
+        this.beanPostProcessors.add(beanPostProcessor);
+    }
 
-
+    /**
+     * 初始化所有bean
+     * @throws Exception
+     */
+    public void preInstantiateSingletons() throws Exception {
+        for (Iterator it = this.beanDefinitionNames.iterator(); it.hasNext();) {
+            String beanName = (String) it.next();
+            getBean(beanName);
+        }
+    }
 }

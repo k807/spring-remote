@@ -8,9 +8,9 @@ package per.wph.beans;
  * =============================================
  */
 public class DefaultClassResolver implements ClassResolver {
+
     @Override
     public void resolver(BeanDefinition bean) throws ClassNotFoundException {
-        String clazz = bean.getBeanClass();
-        bean.setType(Class.forName(clazz));
+
     }
 }

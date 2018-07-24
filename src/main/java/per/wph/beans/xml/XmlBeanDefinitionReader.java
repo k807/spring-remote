@@ -1,21 +1,16 @@
 package per.wph.beans.xml;
 
-import per.wph.beans.BeanPostProcessor;
-import per.wph.beans.DefaultBeanDefinition;
-import per.wph.beans.DefaultBeanReference;
-import per.wph.beans.DefaultClassResolver;
-import per.wph.beans.DefaultPropertyValue;
-import per.wph.beans.factory.Registrar;
-import per.wph.beans.io.Resource;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import per.wph.beans.factory.Registry;
+import per.wph.beans.io.ResourceLoader;
 import per.wph.beans.*;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import java.util.Objects;
+import java.io.InputStream;
 
 /**
  * =============================================
@@ -24,82 +19,76 @@ import java.util.Objects;
  * @create 2018-07-20 23:00
  * =============================================
  */
-public class XmlBeanDefinitionReader implements BeanDefinitionReader {
-    private Registrar registrar;
+public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 
-    private ClassResolver resolver = new DefaultClassResolver();
 
-    public void setResolver(ClassResolver resolver) {
-        this.resolver = resolver;
-    }
-
-    public XmlBeanDefinitionReader(Registrar registrar) {
-        this.registrar = registrar;
+    public XmlBeanDefinitionReader(Registry registry) {
+        super(registry, new ResourceLoader());
     }
 
     @Override
-    public void loadBeanDefinition(Resource resource) throws Exception {
+    public void loadBeanDefinition(String location) throws Exception {
+        InputStream inputStream = getResourceLoader().getResource(location).getInputStream();
+        doLoadBeanDefinitions(inputStream);
+    }
+
+    protected void doLoadBeanDefinitions(InputStream inputStream) throws Exception {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder = factory.newDocumentBuilder();
-        Document document = builder.parse(resource.getInputStream());
+        DocumentBuilder docBuilder = factory.newDocumentBuilder();
+        Document doc = docBuilder.parse(inputStream);
+        // 解析bean
+        registerBeanDefinitions(doc);
+        inputStream.close();
+    }
 
-        // 1. 获得xml的document文件
-        Element doc = document.getDocumentElement();
-        NodeList nodeList = doc.getChildNodes();
-        for(int i = 0; i <nodeList.getLength(); i++){
-            Node node = nodeList.item(i);
-            if(node instanceof Element){
+    public void registerBeanDefinitions(Document doc) {
+        Element root = doc.getDocumentElement();
+
+        parseBeanDefinitions(root);
+    }
+
+    protected void parseBeanDefinitions(Element root) {
+        NodeList nl = root.getChildNodes();
+        for (int i = 0; i < nl.getLength(); i++) {
+            Node node = nl.item(i);
+            if (node instanceof Element) {
                 Element ele = (Element) node;
-                if(ele.getNodeName().equals("bean")){
-                    parseBeanElement(ele);
-                }else if(ele.getNodeName().equals("db")){
-
-                }
-
+                processBeanDefinition(ele);
             }
         }
+    }
 
+    protected void processBeanDefinition(Element ele) {
+        String name = ele.getAttribute("id");
+        String className = ele.getAttribute("class");
+        BeanDefinition beanDefinition = new BeanDefinition();
+        processProperty(ele, beanDefinition);
+        beanDefinition.setBeanClassName(className);
+        getRegistry().registBeanDefinition(name, beanDefinition);
     }
 
 
-    private void resolveBeanDefinition(BeanDefinition beanDefinition) throws ClassNotFoundException {
-        if(!Objects.isNull(resolver)){
-            resolver.resolver(beanDefinition);
-        }
-    }
-
-    private void parseBeanElement(Element ele) throws ClassNotFoundException {
-        // 1. 读取name和class
-        DefaultBeanDefinition beanDefinition = new DefaultBeanDefinition();
-        String beanName = ele.getAttribute("id");
-        String clazz = ele.getAttribute("class");
-        beanDefinition.setBeanName(beanName);
-        beanDefinition.setBeanClass(clazz);
-
-        // 2. 读取property配置
-        NodeList propertyNodes = ele.getElementsByTagName("property");
-        for(int j = 0; j < propertyNodes.getLength(); j++) {
-            Node node1 = propertyNodes.item(j);
-            if(node1 instanceof Element){
-                Element property = (Element) node1;
-                String propertyName = property.getAttribute("name");
-                if (property.hasAttribute("value")){
-                    String value = property.getAttribute("value");
-                    DefaultPropertyValue propertyValue = new DefaultPropertyValue(propertyName, value);
-                    beanDefinition.addPropertyValue(propertyValue);
-                }
-                if(property.hasAttribute("ref")){
-                    String ref = property.getAttribute("ref");
-                    DefaultBeanReference reference = new DefaultBeanReference(propertyName, ref);
-                    beanDefinition.addBeanReference(reference);
+    private void processProperty(Element ele, BeanDefinition beanDefinition) {
+        NodeList propertyNode = ele.getElementsByTagName("property");
+        for (int i = 0; i < propertyNode.getLength(); i++) {
+            Node node = propertyNode.item(i);
+            if (node instanceof Element) {
+                Element propertyEle = (Element) node;
+                String name = propertyEle.getAttribute("name");
+                String value = propertyEle.getAttribute("value");
+                if (value != null && value.length() > 0) {
+                    beanDefinition.getPropertyValues().addPropertyValue(new PropertyValue(name, value));
+                } else {
+                    String ref = propertyEle.getAttribute("ref");
+                    if (ref == null || ref.length() == 0) {
+                        throw new IllegalArgumentException("Configuration problem: <property> element for property '"
+                                + name + "' must specify a ref or value");
+                    }
+                    BeanReference beanReference = new BeanReference(ref);
+                    beanDefinition.getPropertyValues().addPropertyValue(new PropertyValue(name, beanReference));
                 }
             }
         }
-
-        // 3. 解析class类型
-        resolveBeanDefinition(beanDefinition);
-        registrar.registBeanDefinition(beanDefinition.getBeanName(), beanDefinition);
     }
-
 
 }

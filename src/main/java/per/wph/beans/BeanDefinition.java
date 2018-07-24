@@ -1,20 +1,60 @@
 package per.wph.beans;
 
-public interface BeanDefinition {
-    String getBeanName();
-    void setBeanName(String name);
 
-    String getBeanClass();
-    void setBeanClass(String clazz);
+/**
+ * =============================================
+ *
+ * @author wu
+ * @create 2018-07-20 23:08
+ * =============================================
+ */
+public class BeanDefinition {
 
-    Class<?> getType();
-    void setType(Class<?> type);
+    private Object bean;
 
-    PropertyValues getPropertyValues();
-    void addPropertyValue(PropertyValue propertyValue);
+    private Class beanClass;
 
-    BeanReferences getBeanReferences();
-    void addBeanReference(BeanReference reference);
+    private String beanClassName;
 
-    void markBeanPostProccessor();
+    private PropertyValues propertyValues = new PropertyValues();
+
+    public BeanDefinition() {
+    }
+
+    public void setBean(Object bean) {
+        this.bean = bean;
+    }
+
+    public Class getBeanClass() {
+        return beanClass;
+    }
+
+    public void setBeanClass(Class beanClass) {
+        this.beanClass = beanClass;
+    }
+
+    public String getBeanClassName() {
+        return beanClassName;
+    }
+
+    public void setBeanClassName(String beanClassName) {
+        this.beanClassName = beanClassName;
+        try {
+            this.beanClass = Class.forName(beanClassName);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public Object getBean() {
+        return bean;
+    }
+
+    public PropertyValues getPropertyValues() {
+        return propertyValues;
+    }
+
+    public void setPropertyValues(PropertyValues propertyValues) {
+        this.propertyValues = propertyValues;
+    }
 }
