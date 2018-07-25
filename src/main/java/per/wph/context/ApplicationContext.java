@@ -1,4 +1,4 @@
-package per.wph.beans.context;
+package per.wph.context;
 
 import per.wph.beans.factory.BeanFactory;
 

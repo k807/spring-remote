@@ -71,7 +71,9 @@
 | class_byte | n | n | n | class文件，不允许修改 |
 
 ## 后续版本
-1. 支持github的remote版本
+1. 支持远程读取github的xml配置文件
+
+1. 支持代码在github的remote版本
 
 2. 服务端可以配置秘钥加密class,remoteClassLoader解密读取class文件
 

@@ -1,4 +1,4 @@
-package per.wph.beans.context;
+package per.wph.context;
 
 import per.wph.beans.BeanDefinition;
 import per.wph.beans.BeanPostProcessor;
@@ -35,5 +35,20 @@ public abstract class AbstractApplicationContext implements ApplicationContext {
     @Override
     public Object getBean(String name) throws Exception {
         return beanFactory.getBean(name);
+    }
+
+    @Override
+    public void registBeanDefinition(String beanName, BeanDefinition beanDefinition) {
+        beanFactory.registBeanDefinition(beanName, beanDefinition);
+    }
+
+    @Override
+    public BeanDefinition getBeanDefinition(String beanName) {
+        return beanFactory.getBeanDefinition(beanName);
+    }
+
+    @Override
+    public boolean containsBeanDefinition(String beanName) {
+        return beanFactory.containsBeanDefinition(beanName);
     }
 }
