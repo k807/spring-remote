@@ -20,8 +20,8 @@
 4. 支持BeanPostProcessor增强bean
 
 ## 使用说明
-客户端：
-1. 配置服务端数据库源
+### 客户端：
+#### 配置服务端数据库源
 ```xml
 <db-property>
     <driver>com.mysql.jdbc.Driver</driver>
@@ -31,9 +31,8 @@
 </db-property>
 
 ```
-2. 配置远程bean
 
-### remote-name 远程实现类的标识名称
+#### remote-name 远程实现类的标识名称
 需要配置remote-name属性,其他与基础spring-bean配置方式一致
 接口实现类默认取version值最大的版本
 ```xml
@@ -42,7 +41,7 @@
 </bean>
 ```
 
-### version 指定远程实现类的版本
+#### version 指定远程实现类的版本
 如果需要指定的remote接口实现版本，则可以指定version版本号
 ```xml
 <bean id="" remote-name="" version="">
@@ -50,7 +49,7 @@
 </bean>
 ```
 
-### persistent 是否将实现类保存在本地(未实现)
+#### persistent 是否将实现类保存在本地(未实现)
 指定persisten关键字，可以将实现类class保存在本地，当指定了version时，加载bean时只会在本地校验class文件的版本号等于version
 ```xml
 <bean id="" remote-name="" version="" persistent="true">
@@ -64,16 +63,7 @@
     <property></property>
 </bean>
 ```
-
-
-## 注意事项
-1. 客户端预留的接口不可随意更改包位置
-2. 客户端不可随意更改接口信息
-3. 服务端的中的表class_name填写实现类的类全路径名,例如com.doc包下的ServiceImpl类,需要填写的class_name为com.doc.ServiceImpl
-4. 客户端更改实现类版本号只需指定version
-5. 服务端想更改客户端默认使用的实现类，只需将实现类的version设为最大值
-
-服务端：
+### 服务端：
 
 按照约定配置bean数据库
 库名为```remote_beans```,表结构如下
@@ -87,6 +77,15 @@
 | version | int | n | n | 一个实现类的版本, 客户端可以通过制定version指定需要的类,相同remote_name version不能相同 |
 | open | boolean | n | n | 是否开放，如果为false，则不会被客户端访问到 |
 | class_byte | n | n | n | class文件，不允许修改 |
+
+## 注意事项
+1. 客户端预留的接口不可随意更改包位置
+2. 客户端不可随意更改接口信息
+3. 服务端的中的表class_name填写实现类的类全路径名,例如com.doc包下的ServiceImpl类,需要填写的class_name为com.doc.ServiceImpl
+4. 客户端更改实现类版本号只需指定version
+5. 服务端想更改客户端默认使用的实现类，只需将实现类的version设为最大值
+
+
 
 ## 后续版本
 1. 支持远程读取github的xml配置文件
