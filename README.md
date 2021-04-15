@@ -49,7 +49,7 @@
 </bean>
 ```
 
-#### persistent 是否将实现类保存在本地(未实现)
+#### persistent 是否将实现类保存在本地
 指定persisten关键字，可以将实现类class保存在本地，当指定了version时，加载bean时只会在本地校验class文件的版本号等于version
 ```xml
 <bean id="" remote-name="" version="" persistent="true">
@@ -63,6 +63,13 @@
     <property></property>
 </bean>
 ```
+
+#### 动态热加载
+指定hotswap关键字，会以15s的间隔定期检查是否有新的bean版本，如果存在，则进行热加载热替换
+<bean id="" remote-name="" hotswap="true">
+    <property></property>
+</bean>
+
 ### 服务端：
 
 按照约定配置bean数据库
