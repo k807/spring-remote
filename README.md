@@ -66,9 +66,11 @@
 
 #### 动态热加载
 指定hotswap关键字，会以15s的间隔定期检查是否有新的bean版本，如果存在，则进行热加载热替换
+```
 <bean id="" remote-name="" hotswap="true">
     <property></property>
 </bean>
+```
 
 ### 服务端：
 
@@ -91,14 +93,3 @@
 3. 服务端的中的表class_name填写实现类的类全路径名,例如com.doc包下的ServiceImpl类,需要填写的class_name为com.doc.ServiceImpl
 4. 客户端更改实现类版本号只需指定version
 5. 服务端想更改客户端默认使用的实现类，只需将实现类的version设为最大值
-
-## 后续版本
-1. 支持远程读取github的xml配置文件
-
-1. 支持代码在github的remote版本
-
-2. 服务端可以配置秘钥加密class,remoteClassLoader解密读取class文件
-
-3. 支持autowire, 当bean配置autowireByType,并且在spring容器中找不到对应接口实现时，会自动从remote获取class实现,并对bean自动装配
-
-4. 支持注解形式
