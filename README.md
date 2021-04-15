@@ -66,7 +66,7 @@
 
 #### 动态热加载
 指定hotswap关键字，会以15s的间隔定期检查是否有新的bean版本，如果存在，则进行热加载热替换
-```
+```xml
 <bean id="" remote-name="" hotswap="true">
     <property></property>
 </bean>
